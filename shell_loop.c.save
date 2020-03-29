@@ -1,0 +1,87 @@
+# include "minishell.h"
+
+int	calc_pipe(char *line)
+{
+	int i;
+	int pipe;
+	int quote;
+
+	pipe = 0;
+	quote = 0;
+	i = -1;
+	while (line[++i])
+	{
+		/*
+		**--------------------------------------------**
+		**  check if there's the open quote or double quotes
+		**--------------------------------------------**
+		*/
+		if ((line[i] == '\'' || line[i] == '"') && !quote && line[i - 1] != '\\')
+			quote = line[i];
+		else if ((line[i] == '\'' || line[i] == '"') && quote == line[i] && line[i - 1] != '\\')
+			quote = 0;
+		pipe += (line[i] == '|' && line[i - 1] != '\\' && !quote);
+	}
+	return (pipe);
+}
+
+void	pipe_position(char *line, int nb_pipe)
+int     calc_pipe(char *line)
+{
+        int i;
+                int pipe;
+                        int quote;
+
+                                pipe = 0;
+                                        quote = 0;
+                                                i = -1;
+                                                        while (line[++i])
+                                                                {
+                                                                                /*
+                                                                                                **--------------------------------------------**
+                                                                                                                **  check if there's the open quote or double quotes
+                                                                                                                                **--------------------------------------------**
+                                                                                                                                                */
+                                                                                                                                                                if ((line[i] == '\'' || line[i] == '"') && !quote && line[i - 1] != '\\')
+                                                                                                                                                                                        quote = line[i];
+                                                                                                                                                                                                        else if ((line[i] == '\'' || line[i] == '"') && quote == line[i] && line[i - 1] != '\\')
+                                                                                                                                                                                                                                quote = 0;
+                                                                                                                                                                                                                                                pipe += (line[i] == '|' && line[i - 1] != '\\' && !quote);
+                                                                                                                                                                                                                                                        }
+                                                                                                                                                                                                                                                                return (pipe);
+                                                                                                                                                                                                                                                                }
+
+void	prepare_line(char *line, int nb_pipe)
+{
+	/*
+	**----------------------------------------------------**
+	** add 2 for the end of array and the first command
+	**----------------------------------------------------**
+	*/
+	pipe += 2;
+	g_cmd_call = (t_cmd*)malloc(sizeof(t_cmd * (pipe)));
+	g_cmd_call[pipe + 1] = NULL;
+	
+}
+
+void	shell_loop(void)
+{
+	char	*line;
+	int i;
+
+	waiting_new_cmd();
+	while (get_next_line(0, &line) > 0)
+	{
+		prepare_ligne(line, calc_pipe(line));
+		i = -1;
+		while (commands[++i])
+		{
+			if (ft_strcmp(commands[i], line))
+			{
+				
+			}
+		}
+		printf("\n PIPE = %d\n", calc_pipe(line));
+		waiting_new_cmd();
+	}
+}
