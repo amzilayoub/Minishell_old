@@ -113,16 +113,87 @@ void	shell_loop(char **envp)
 	int	i;
 	int	status;
 	int	nb_pipe;
-	int	pipe_count;
+	int	proc_called;
 
-	pipe_count = 0;
+	proc_called = 0;
 	waiting_new_cmd();
+	dup2(1, 10);
 	while (get_next_line(0, &line) > 0)
 	{
 		prepare_line(line, nb_pipe = calc_pipe(line));
 		i = -1;
 		while (g_cmd_call[++i].cmd)
 		{
+			if (proc_called < nb_pipe)
+				pipe(g_pipe_fd);
+			proc_called++;
+			g_pid = fork();
+			if (g_pid == 0)
+			{
+				/*
+				** for Writing
+				*/
+				if (nb_pipe && g_cmd_call[i + 1].cmd)
+				{
+					//printf("IF %d\n", i + 1);
+					dup2(g_pipe_fd[1], 1);
+				}
+				else if (!g_cmd_call[i + 1].cmd)
+				{
+					//printf("ELSE IF %d\n", i + 1);
+					dup2(g_stdio_fd[1], 1);
+				}
+				/*
+				** for reading
+				*/
+				if (i != 0)
+				{
+					//printf("IF i != 0\n", i + 1);
+					dup2(g_pipe_fd[0], 0);
+				}
+				execve(ft_strjoin("builtins/", g_cmd_call[i].cmd), &g_cmd_call[i].param_line, envp);
+				printf("minishell: ERROR\n");
+				exit(-1);
+			}
+			else
+				wait(&status);
+			/*
+			if (nb_pipe)
+			{
+				nb_pipe--;
+				pipe(g_pipe_fd);
+			}
+			g_pid = fork();
+			if (g_pid == 0)
+			{
+				dup2(g_pipe_fd[1], 1);
+				execve(ft_strjoin("builtins/", g_cmd_call[i].cmd), &g_cmd_call[i].param_line, envp);
+				printf("CHILD 1\n");
+				exit(1);
+			}
+			else if (g_pid < 0)
+				printf("ERROR\n");
+			else
+			{
+				wait(&status);
+				g_pid = fork();
+				if (g_pid == 0)
+				{
+					dup2(g_pipe_fd[0], 0);
+					dup2(g_stdio_fd[1], 1);
+					execve(ft_strjoin("builtins/", g_cmd_call[i + 1].cmd), &g_cmd_call[i + 1].param_line, envp);
+					printf("CHILD 2\n");
+				}
+				else
+				{
+					wait(&status);
+					dup2(g_stdio_fd[0], 0);
+				}
+				printf("PARENT\n");
+			}
+			break;
+			*/
+			/*
 			if (nb_pipe)
 			{
 				nb_pipe--;
@@ -132,24 +203,15 @@ void	shell_loop(char **envp)
 			}
 			else
 				dup2(g_stdio_fd[1], 1);
-			if (!(g_pid = fork()))
-			{
-				execve(ft_strjoin("builtins/", g_cmd_call[i].cmd), &g_cmd_call[i].param_line, envp);
-				ft_putstr_fd("minishell: ERROR\n", 2);
-				exit(-1);
-			}
-			else if (g_pid < 0)
-				ft_putstr_fd("ERROR\n", 2);
-			else
-				wait(&status);
+			*/
 			/*
 			printf("CMD = %s\n", g_cmd_call[j].cmd);
 			printf("PARAM = %s\n", (g_cmd_call[j].param_line));
 			printf("-----------------------------------\n");
 			*/
 		}
-		close(g_pipe_fd[0]);
-		dup2(g_stdio_fd[0], 0);
+		//close(g_pipe_fd[0]);
+		//dup2(g_stdio_fd[0], 0);
 		waiting_new_cmd();
 	}
 }
