@@ -30,7 +30,7 @@ typedef	struct	s_cmd
 
 t_cmd		*g_cmd_call;
 int		g_stdio_fd[2];
-int		g_pipe_fd[2];
+int		**g_pipe_fd;
 pid_t		g_pid;
 
 char	*g_cmd_str[8];

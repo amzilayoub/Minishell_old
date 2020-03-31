@@ -7,7 +7,7 @@
 
 int	main(int argc, char **argv, char**envp)
 {
-	char s[10];
-	read(0, s, 50);
-	printf("FROM ECHO %s | READ = %s\n", *argv, s);
+	char *s;
+	get_next_line(0, &s);
+	printf("READ = %s | ARG = %s\n", s, *argv);
 }
