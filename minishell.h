@@ -12,6 +12,12 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 
+# define DELIM_SEMICOLON ft_split(";", ' ')
+# define DELIM_PIPE ft_split("|", ' ')
+# define DELIM_OUT_REDIR ft_split(">", ' ')
+# define DELIM_IN_REDIR ft_split("<", ' ')
+# define DELIM_APPEND_REDIR ft_split(">>", ' ')
+# define ALL_DELIM ft_split("| >> < >", ' ')
 # define ft_putstr(str) ft_putstr_fd(str, 1)
 # define ft_putchar(c) ft_putchar_fd(c, 1);
 # define ENVP_GROW 6
@@ -36,6 +42,11 @@ typedef	struct	s_cmd
 	int	cmd_pos;
 }		t_cmd;
 
+typedef struct	s_whole_cmd
+{
+	char	*cmd_line;
+	t_cmd	*cmd_treated;
+}		t_whole_cmd;
 
 /*
 **------------------------------------------------------**
@@ -43,8 +54,7 @@ typedef	struct	s_cmd
 **------------------------------------------------------**
 */
 
-
-
+t_whole_cmd	*g_all_cmd;
 int		g_nb_redirections;
 int		g_nb_pipe;
 int		g_nb_semicolons;
