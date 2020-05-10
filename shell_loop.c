@@ -174,7 +174,7 @@ void	fit_cmdpos(int *pos, int index)
 
 	i = -1;
 	g_all_cmd[index].cmd_treated[0].cmd_pos = 0;
-	while (++i < g_nb_pipe)
+	while (++i < g_nb_pipe - 1)
 	{
 		c = g_all_cmd[index].cmd_line[pos[i]];
 		if (c == '>' || c == '<')
@@ -206,7 +206,7 @@ void	prepare_line(int nb_pipe, int index)
 	fit_cmdpos(pos, index);
 	//cmd_position(g_all_cmd[index].cmd_line, index);
 	//printf("SEM = %d | PIPE = %d\n", g_nb_semicolons, g_nb_pipe);
-	while (++i < nb_pipe)
+	while (++i < nb_pipe - 1)
 	{
 		j = g_all_cmd[index].cmd_treated[i].cmd_pos;
 		//printf("POS = %d\n", j);
@@ -287,7 +287,7 @@ void	shell_loop(char **envp)
 		k = -1;
 		while (g_all_cmd[++k].cmd_line)
 		{
-			g_nb_pipe = calc_nb_char(g_all_cmd[k].cmd_line, ALL_DELIM);
+			g_nb_pipe = calc_nb_char(g_all_cmd[k].cmd_line, ALL_DELIM) + 1;
 			//pipe_treatement(g_all_cmd[k].cmd_line);
 			prepare_line(g_nb_pipe, k);
 			if (!(g_pipe_fd = (int**)malloc(sizeof(int*) * g_nb_pipe)))

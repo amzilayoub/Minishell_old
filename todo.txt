@@ -1,3 +1,4 @@
+echo hhhh | > file
 try to think about pipe as a program
 that is a error : export aaa=====ddd
 also this: echo hello ><test
